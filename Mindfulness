@@ -1,0 +1,231 @@
+using System;
+using System.Threading;
+using System.Diagnostics;
+
+public abstract class Activity
+{
+    protected int duration;
+    protected string name;
+    protected string description;
+
+    public Activity()
+    {
+        Console.WriteLine($"Starting {name} activity...");
+        Console.WriteLine(description);
+        SetDuration();
+        Console.WriteLine("Prepare to begin...");
+        PauseWithAnimation(3);
+    }
+
+    protected void SetDuration()
+    {
+        Console.Write("Enter duration in seconds: ");
+        duration = Convert.ToInt32(Console.ReadLine());
+    }
+
+    protected void PauseWithAnimation(int seconds)
+    {
+        for (int i = seconds; i > 0; i--)
+        {
+            Console.Write(".");
+            Thread.Sleep(1000);
+        }
+        Console.WriteLine();
+    }
+
+    public abstract void Start();
+
+    public void End()
+    {
+        Console.WriteLine($"Good job! You have completed the {name} activity.");
+        Console.WriteLine($"Duration: {duration} seconds.");
+        PauseWithAnimation(3);
+    }
+}
+
+public class BreathingActivity : Activity
+{
+    public BreathingActivity()
+    {
+        name = "Breathing";
+        description = "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.";
+    }
+
+    public override void Start()
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        int halfDuration = duration / 2;
+
+        for (int i = 0; i < halfDuration; i++)
+        {
+            Console.WriteLine("Breathe in...");
+            PauseWithAnimation(3);
+
+            Console.WriteLine("Breathe out...");
+            PauseWithAnimation(3);
+
+            if (stopwatch.Elapsed.TotalSeconds >= duration)
+            {
+                break;
+            }
+        }
+
+        stopwatch.Stop();
+        End();
+    }
+}
+
+public class ReflectionActivity : Activity
+{
+    private string[] prompts = {
+        "Think of a time when you stood up for someone else.",
+        "Think of a time when you did something really difficult.",
+        "Think of a time when you helped someone in need.",
+        "Think of a time when you did something truly selfless."
+    };
+
+    private string[] questions = {
+        "Why was this experience meaningful to you?",
+        "Have you ever done anything like this before?",
+        "How did you get started?",
+        "How did you feel when it was complete?",
+        "What made this time different than other times when you were not as successful?",
+        "What is your favorite thing about this experience?",
+        "What could you learn from this experience that applies to other situations?",
+        "What did you learn about yourself through this experience?",
+        "How can you keep this experience in mind in the future?"
+    };
+
+    public ReflectionActivity()
+    {
+        name = "Reflection";
+        description = "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.";
+    }
+
+    public override void Start()
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        Random rand = new Random();
+        while (stopwatch.Elapsed.TotalSeconds < duration)
+        {
+            string prompt = prompts[rand.Next(prompts.Length)];
+            Console.WriteLine(prompt);
+            PauseWithAnimation(3);
+
+            string question = questions[rand.Next(questions.Length)];
+            Console.WriteLine(question);
+            PauseWithAnimation(3);
+
+            if (stopwatch.Elapsed.TotalSeconds >= duration)
+            {
+                break;
+            }
+        }
+
+        stopwatch.Stop();
+        End();
+    }
+}
+
+public class ListingActivity : Activity
+{
+    private string[] prompts = {
+        "Who are people that you appreciate?",
+        "What are personal strengths of yours?",
+        "Who are people that you have helped this week?",
+        "When have you felt the Holy Ghost this month?",
+        "Who are some of your personal heroes?"
+    };
+
+    public ListingActivity()
+    {
+        name = "Listing";
+        description = "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.";
+    }
+
+    public override void Start()
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        Random rand = new Random();
+        while (stopwatch.Elapsed.TotalSeconds < duration)
+        {
+            string prompt = prompts[rand.Next(prompts.Length)];
+            Console.WriteLine(prompt);
+            PauseWithAnimation(5);
+            Console.WriteLine("Start listing items(write done when you finish)...");
+
+            int itemCount = 0;
+            while (true)
+            {
+                string input = Console.ReadLine();
+                if (input.ToLower() == "done")
+                {
+                    break;
+                }
+                itemCount++;
+
+                if (stopwatch.Elapsed.TotalSeconds >= duration)
+                {
+                    break;
+                }
+            }
+            Console.WriteLine($"Number of items listed: {itemCount}");
+
+            if (stopwatch.Elapsed.TotalSeconds >= duration)
+            {
+                break;
+            }
+        }
+
+        stopwatch.Stop();
+        End();
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        while (true)
+        {
+            Console.WriteLine("Menu:");
+            Console.WriteLine("1. Breathing Activity");
+            Console.WriteLine("2. Reflection Activity");
+            Console.WriteLine("3. Listing Activity");
+            Console.WriteLine("4. Exit");
+            Console.Write("Choose an activity: ");
+
+            int choice = Convert.ToInt32(Console.ReadLine());
+
+            Activity activity;
+
+            switch (choice)
+            {
+                case 1:
+                    activity = new BreathingActivity();
+                    activity.Start();
+                    break;
+                case 2:
+                    activity = new ReflectionActivity();
+                    activity.Start();
+                    break;
+                case 3:
+                    activity = new ListingActivity();
+                    activity.Start();
+                    break;
+                case 4:
+                    Console.WriteLine("Exiting program...");
+                    return;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
+        }
+    }
+}
